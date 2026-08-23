@@ -2,6 +2,13 @@
 
 Production-minded AI support platform for the CalQuity AI Engineer assessment.
 
+## Submission Links
+
+- Public repository: `https://github.com/eeshwar369/ParcelPilot`
+- Hosted customer app: `https://parcelpilot-frontend-3y2l.onrender.com`
+- Hosted admin dashboard: `https://parcelpilot-frontend-3y2l.onrender.com/admin`
+- Hosted backend health: `https://parcelpilot-backend-9yb7.onrender.com/api/health`
+
 This repo currently includes:
 
 - Customer and internal support chat contexts.
@@ -142,4 +149,10 @@ See [SAMPLE_PROMPTS.md](SAMPLE_PROMPTS.md). The customer assistant and admin con
 
 ## Architecture
 
-See [ARCHITECTURE_PLAN.md](ARCHITECTURE_PLAN.md).
+See [ARCHITECTURE_NOTE.md](ARCHITECTURE_NOTE.md) for the short submission note and [ARCHITECTURE_PLAN.md](ARCHITECTURE_PLAN.md) for the expanded architecture plan.
+
+## Product Note And AI Usage
+
+- [PRODUCT_NOTE.md](PRODUCT_NOTE.md)
+- [AI_TOOL_USAGE.md](AI_TOOL_USAGE.md)
+- [DEMO_VIDEO_OUTLINE.md](DEMO_VIDEO_OUTLINE.md)
