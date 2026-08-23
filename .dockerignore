@@ -1,0 +1,13 @@
+.git
+.env
+.env.*
+!.env.production.example
+frontend/node_modules
+frontend/.next
+frontend/out
+frontend/.turbo
+backend/**/__pycache__
+backend/**/*.pyc
+data/processed
+*.log
+node_modules

@@ -1,0 +1,59 @@
+services:
+  - type: web
+    name: parcelpilot-backend
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: ALLOWED_ORIGINS
+        value: https://parcelpilot-frontend.onrender.com
+      - key: RETRIEVAL_PROVIDER
+        value: pinecone
+      - key: PINECONE_INDEX
+        value: parcelpilot-support
+      - key: PINECONE_NAMESPACE
+        value: production
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+      - key: OPENAI_EMBEDDING_MODEL
+        value: text-embedding-3-small
+      - key: OPENAI_EMBEDDING_DIMENSIONS
+        value: "1024"
+      - key: HF_TEXT_MODEL
+        value: mistralai/Mistral-7B-Instruct-v0.3
+      - key: MODEL_ROUTING_MODE
+        value: cost_aware
+      - key: OPENAI_DAILY_BUDGET_USD
+        value: "50"
+      - key: OPENAI_REQUEST_BUDGET_USD
+        value: "0.25"
+      - key: LOG_LEVEL
+        value: info
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: HF_TOKEN
+        sync: false
+      - key: DEMO_AUTH_SECRET
+        generateValue: true
+
+  - type: web
+    name: parcelpilot-frontend
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: .
+    envVars:
+      - key: NEXT_PUBLIC_API_BASE_URL
+        value: https://parcelpilot-backend.onrender.com
+      - key: NEXT_PUBLIC_WS_BASE_URL
+        value: wss://parcelpilot-backend.onrender.com
