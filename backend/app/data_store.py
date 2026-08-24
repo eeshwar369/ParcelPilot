@@ -89,6 +89,7 @@ def _demo_documents() -> list[dict[str, Any]]:
 def _demo_state() -> dict[str, Any]:
     snapshot = datetime(2026, 8, 22, 6, 30, tzinfo=timezone.utc)
     return {
+        "data_source": "demo_fallback",
         "snapshot_time": snapshot.isoformat(),
         "accounts": [
             {"id": "ACCT-001", "name": "Northstar Logistics", "tier": "enterprise"},
@@ -160,12 +161,30 @@ def _demo_state() -> dict[str, Any]:
     }
 
 
+def _empty_state() -> dict[str, Any]:
+    return {
+        "data_source": "empty",
+        "snapshot_time": utcnow().isoformat(),
+        "accounts": [],
+        "orders": [],
+        "tickets": [],
+        "documents": [],
+        "pending_actions": [],
+        "escalations": [],
+        "audit_events": [],
+        "model_usage_events": [],
+    }
+
+
 class DataStore:
-    def __init__(self) -> None:
+    def __init__(self, use_demo_fallback: bool = True) -> None:
         PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
         if not STATE_FILE.exists():
-            self.state = _demo_state()
-            self.save()
+            if not use_demo_fallback:
+                self.state = _empty_state()
+            else:
+                self.state = _demo_state()
+                self.save()
         else:
             self.state = json.loads(STATE_FILE.read_text(encoding="utf-8"))
 

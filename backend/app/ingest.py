@@ -28,6 +28,7 @@ def ingest_available_files(store: DataStore) -> dict[str, Any]:
     store.state["escalations"] = []
     store.state["audit_events"] = []
     store.state["model_usage_events"] = []
+    store.state["data_source"] = "raw_files"
 
     loaded: list[str] = []
     skipped: list[str] = []

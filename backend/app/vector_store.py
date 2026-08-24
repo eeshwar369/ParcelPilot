@@ -87,10 +87,11 @@ class PineconeVectorStore:
 
     def search(self, documents: list[dict[str, Any]], query: str, limit: int = 5) -> list[tuple[dict[str, Any], float]]:
         self.ensure_indexed(documents)
+        allowed_doc_ids = {str(doc.get("id") or "") for doc in documents}
         query_vector = self._embed(query)
         response = self.index.query(
             vector=query_vector,
-            top_k=limit,
+            top_k=max(limit * 4, 20),
             namespace=settings.pinecone_namespace,
             include_metadata=True,
         )
@@ -98,8 +99,12 @@ class PineconeVectorStore:
         results: list[tuple[dict[str, Any], float]] = []
         for match in matches:
             metadata = match.get("metadata", {}) if isinstance(match, dict) else getattr(match, "metadata", {}) or {}
+            if str(metadata.get("id") or "") not in allowed_doc_ids:
+                continue
             score = float(match.get("score", 0.0) if isinstance(match, dict) else getattr(match, "score", 0.0))
             results.append((self._doc_from_metadata(metadata), score))
+            if len(results) >= limit:
+                break
         return results
 
     def ensure_indexed(self, documents: list[dict[str, Any]]) -> None:

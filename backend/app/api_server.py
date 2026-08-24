@@ -17,7 +17,32 @@ from backend.app.ingest import ingest_available_files
 
 settings.validate_production()
 
-store = DataStore()
+
+def build_store() -> DataStore:
+    hydrated_store = DataStore(use_demo_fallback=not settings.is_production)
+    ingest_result = ingest_available_files(hydrated_store)
+    if settings.is_production:
+        validate_real_data(hydrated_store, ingest_result)
+    return hydrated_store
+
+
+def validate_real_data(hydrated_store: DataStore, ingest_result: dict[str, Any]) -> None:
+    if ingest_result.get("status") != "ok":
+        raise RuntimeError("Production requires real files in data/raw; demo fallback is disabled.")
+    if ingest_result.get("skipped"):
+        raise RuntimeError(f"Production ingestion skipped required files: {ingest_result['skipped']}")
+    required = {
+        "accounts": hydrated_store.state.get("accounts", []),
+        "orders": hydrated_store.state.get("orders", []),
+        "tickets": hydrated_store.state.get("tickets", []),
+        "documents": hydrated_store.state.get("documents", []),
+    }
+    empty = [name for name, value in required.items() if not value]
+    if empty:
+        raise RuntimeError(f"Production ingestion did not populate: {', '.join(empty)}")
+
+
+store = build_store()
 agent = SupportAgent(store)
 store_lock = RLock()
 
@@ -64,6 +89,13 @@ def health() -> dict[str, Any]:
         "service": "parcelpilot-ai-support",
         "environment": settings.app_env,
         "retrieval_provider": settings.retrieval_provider,
+        "data_source": store.state.get("data_source", "unknown"),
+        "data_counts": {
+            "accounts": len(store.state.get("accounts", [])),
+            "orders": len(store.state.get("orders", [])),
+            "tickets": len(store.state.get("tickets", [])),
+            "documents": len(store.state.get("documents", [])),
+        },
     }
 
 
